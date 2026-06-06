@@ -23,7 +23,13 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   private observeTimer?: ReturnType<typeof setTimeout>;
   private sleepTimer?: ReturnType<typeof setTimeout>;
   private hasPositioned = false;
-  private fireflyState: 'awake' | 'observing' | 'sleeping' = 'sleeping';
+  private fireflyState: 'awake' | 'landing' | 'observing' | 'sleeping' = 'sleeping';
+  private rotation = 0;
+  private hasArrived = false;
+  private arrivalTimer?: ReturnType<typeof setTimeout>;
+  private cursorSpeed = 0;
+  private lastPointerTime = performance.now();
+  private currentChaseDistance = 25;
 
   readonly projects = [
     {
@@ -106,6 +112,19 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     const deltaX = event.clientX - this.cursor.x;
     const deltaY = event.clientY - this.cursor.y;
     const distance = Math.hypot(deltaX, deltaY);
+    const now = performance.now();
+
+    const dt = now - this.lastPointerTime;
+
+    this.lastPointerTime = now;
+
+    const speed = dt > 0
+      ? distance / dt
+      : 0;
+
+    this.cursorSpeed =
+      this.cursorSpeed * 0.8 +
+      speed * 0.2;
     if (distance > 2 && this.hasPositioned) {
       this.movementDirection = { x: deltaX / distance, y: deltaY / distance };
     }
@@ -113,13 +132,24 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.cursor.x = event.clientX;
     this.cursor.y = event.clientY;
     this.lastMoveAt = performance.now();
+    this.hasArrived = false;
 
     if (!this.hasPositioned) {
       this.position = { x: event.clientX - 18, y: event.clientY + 12 };
       this.hasPositioned = true;
     }
 
-    this.setFireflyState('awake');
+    if (this.fireflyState === 'sleeping') {
+      this.setFireflyState('observing');
+
+      clearTimeout(this.observeTimer);
+
+      this.observeTimer = setTimeout(() => {
+        this.setFireflyState('awake');
+      }, 300);
+    } else {
+      this.setFireflyState('awake');
+    }
     clearTimeout(this.observeTimer);
     clearTimeout(this.sleepTimer);
     this.observeTimer = setTimeout(() => this.setFireflyState('observing'), 700);
@@ -130,25 +160,92 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     const element = this.firefly?.nativeElement;
 
     if (element && this.lastMoveAt) {
-      const chaseDistance = this.fireflyState === 'awake' ? 100 : 0;
+      if (this.fireflyState === 'sleeping') {
+        this.frameId = requestAnimationFrame(this.animateFirefly);
+        return;
+      }
+      const desiredChaseDistance =
+        this.fireflyState === 'awake'
+          ? Math.min(220, Math.max(25, this.cursorSpeed * 180))
+          : 0;
+
+      this.currentChaseDistance +=
+        (desiredChaseDistance - this.currentChaseDistance) * 0.03;
+
+      const chaseDistance = this.currentChaseDistance;
       const targetX = this.cursor.x - this.movementDirection.x * chaseDistance;
       const targetY = this.cursor.y - this.movementDirection.y * chaseDistance;
-      const spring = this.fireflyState === 'awake' ? 0.034 : this.fireflyState === 'observing' ? 0.055 : 0.085;
-      const friction = this.fireflyState === 'awake' ? 0.82 : 0.72;
-      this.velocity.x = (this.velocity.x + (targetX - this.position.x) * spring) * friction;
-      this.velocity.y = (this.velocity.y + (targetY - this.position.y) * spring) * friction;
-      this.position.x += this.velocity.x;
-      this.position.y += this.velocity.y;
+      const spring =
+      this.fireflyState === 'awake'
+        ? 0.012
+        : 0.03;
 
-      const angle = Math.atan2(this.velocity.y, this.velocity.x) * 180 / Math.PI;
-      const remainingDistance = Math.hypot(targetX - this.position.x, targetY - this.position.y);
-      element.style.transform = `translate3d(${this.position.x}px, ${this.position.y}px, 0) rotate(${remainingDistance > 5 ? angle : 0}deg)`;
+    const friction =
+      this.fireflyState === 'awake'
+        ? 0.92
+        : 0.85;
+      const remainingDistance = Math.hypot(
+        targetX - this.position.x,
+        targetY - this.position.y
+      );
+      let adjustedSpring = spring;
+
+      if (remainingDistance < 100) {
+        adjustedSpring *= 0.4;
+      }
+      if (
+        remainingDistance < 8 &&
+        !this.hasArrived &&
+        this.fireflyState === 'awake'
+      ) {
+        this.hasArrived = true;
+
+        this.velocity.x = 0;
+        this.velocity.y = 0;
+
+        this.setFireflyState('landing');
+
+        clearTimeout(this.arrivalTimer);
+
+        this.arrivalTimer = setTimeout(() => {
+          this.setFireflyState('observing');
+        }, 500);
+      }
+
+      this.velocity.x =
+        (this.velocity.x + (targetX - this.position.x) * adjustedSpring) * friction;
+
+      this.velocity.y =
+        (this.velocity.y + (targetY - this.position.y) * spring) * friction;
+
+      if (remainingDistance < 8) {
+        this.velocity.x *= 0.5;
+        this.velocity.y *= 0.5;
+      } else {
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+      }
+
+      const lookX = this.cursor.x - this.position.x;
+      const lookY = this.cursor.y - this.position.y;
+
+      const targetAngle =
+        Math.atan2(lookY, lookX) * 180 / Math.PI + 180;
+
+      let diff = targetAngle - this.rotation;
+
+      while (diff > 180) diff -= 360;
+      while (diff < -180) diff += 360;
+
+      this.rotation += diff * 0.12;
+
+      element.style.transform = `translate3d(${this.position.x}px, ${this.position.y}px, 0) rotate(${this.rotation}deg)`;
     }
 
     this.frameId = requestAnimationFrame(this.animateFirefly);
   };
 
-  private setFireflyState(state: 'awake' | 'observing' | 'sleeping') {
+  private setFireflyState(state: 'awake' | 'landing' | 'observing' | 'sleeping') {
     if (state === this.fireflyState) return;
     this.fireflyState = state;
     this.firefly?.nativeElement.setAttribute('data-state', state);
