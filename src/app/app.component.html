@@ -1,0 +1,172 @@
+<header class="site-header">
+  <a class="brand" href="#top" aria-label="Satyam Sharma home"><span>SS</span><strong>SATYAM<br>SHARMA</strong></a>
+  <nav [class.open]="menuOpen">
+    <a href="#work" (click)="closeMenu()">Work</a>
+    <a href="#experience" (click)="closeMenu()">Experience</a>
+    <a href="#stack" (click)="closeMenu()">Stack</a>
+    <a href="#architecture" (click)="closeMenu()">Approach</a>
+    <a class="nav-cta" href="#contact" (click)="closeMenu()">Let's talk <span>&nearr;</span></a>
+  </nav>
+  <button class="menu-button" type="button" aria-label="Toggle navigation" (click)="menuOpen = !menuOpen">
+    <span></span><span></span>
+  </button>
+</header>
+
+<div #firefly class="firefly" data-state="sleeping" aria-hidden="true">
+  <i class="firefly-glow"></i>
+  <i class="wing wing-top"></i>
+  <i class="wing wing-bottom"></i>
+  <i class="firefly-body"></i>
+  <i class="firefly-head"></i>
+  <i class="firefly-trail trail-one"></i>
+  <i class="firefly-trail trail-two"></i>
+</div>
+
+<main id="top">
+  <section class="hero section-pad">
+    <div class="hero-copy">
+      <p class="eyebrow"><span></span> Senior Software Engineer / Frontend Architect</p>
+      <h1>I build interfaces<br>for <em>complex</em><br>systems.</h1>
+      <p class="hero-intro">Five-plus years shaping enterprise products that move fast, stay secure, and make complicated workflows feel simple.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#work">Explore selected work <span>&darr;</span></a>
+        <a class="text-link" href="mailto:satyamshharish@gmail.com">satyamshharish&#64;gmail.com <span>&nearr;</span></a>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-label="Frontend architecture visualization">
+      <div class="orbit orbit-one"></div>
+      <div class="orbit orbit-two"></div>
+      <div class="code-card card-a"><span>REAL_TIME_STREAM</span><strong>40%</strong><small>response gain</small></div>
+      <div class="code-card card-b"><span>MODULES_SECURED</span><strong>06+</strong><small>RBAC / ACL / MFA</small></div>
+      <div class="core">
+        <span>ARCHITECTURE</span>
+        <strong>FE</strong>
+        <small>SCALABLE / SECURE</small>
+      </div>
+      <div class="node node-a"></div><div class="node node-b"></div><div class="node node-c"></div>
+      <p class="visual-label">Angular / React / Node.js / ASP.NET</p>
+    </div>
+
+    <div class="scroll-mark"><span>SCROLL TO EXPLORE</span><i></i></div>
+  </section>
+
+  <section class="metrics">
+    <div><strong>05<span>+</span></strong><p>Years building<br>enterprise software</p></div>
+    <div><strong>40<span>%</span></strong><p>Peak application<br>performance gain</p></div>
+    <div><strong>30<span>%</span></strong><p>Less development effort<br>with shared foundations</p></div>
+    <div><strong>06<span>+</span></strong><p>Critical modules<br>secured end-to-end</p></div>
+  </section>
+
+  <section class="architecture section-pad" id="architecture">
+    <div class="section-heading compact">
+      <div><p class="eyebrow"><span></span> Architecture approach</p><h2>From ambiguity<br>to <em>operating system.</em></h2></div>
+      <p>I design frontend platforms as systems: explicit boundaries, reusable capabilities, observable data flows, and guardrails that help teams deliver safely.</p>
+    </div>
+
+    <div class="architecture-board">
+      <div class="board-head">
+        <span>SYSTEM BLUEPRINT / ENTERPRISE FRONTEND</span>
+        <span>STATUS: PRODUCTION READY</span>
+      </div>
+      <div class="system-map">
+        <div class="map-column">
+          <p>EXPERIENCE LAYER</p>
+          <div class="map-node featured"><strong>Shell + Design System</strong><span>Consistent UX / Accessibility / i18n</span></div>
+          <div class="map-pair"><div class="map-node">Industrial UI</div><div class="map-node">Web + Mobile</div></div>
+        </div>
+        <div class="map-connector"><span>EVENTS</span><i></i><span>STATE</span></div>
+        <div class="map-column">
+          <p>PLATFORM LAYER</p>
+          <div class="map-node featured"><strong>Shared Nx Foundation</strong><span>Libraries / Contracts / Tooling</span></div>
+          <div class="map-pair"><div class="map-node">Auth + RBAC</div><div class="map-node">Telemetry</div></div>
+        </div>
+        <div class="map-connector"><span>REST</span><i></i><span>SOCKET</span></div>
+        <div class="map-column">
+          <p>SERVICE LAYER</p>
+          <div class="map-node featured"><strong>API Orchestration</strong><span>Secure / Observable / Resilient</span></div>
+          <div class="map-pair"><div class="map-node">ASP.NET</div><div class="map-node">Node.js</div></div>
+        </div>
+      </div>
+      <div class="principles">
+        <article><span>01</span><h3>Define boundaries</h3><p>Separate domain logic from delivery layers so products evolve without creating fragile dependencies.</p></article>
+        <article><span>02</span><h3>Design for change</h3><p>Create shared foundations and contracts that reduce repeated work while preserving team autonomy.</p></article>
+        <article><span>03</span><h3>Engineer feedback</h3><p>Use real-time observability, performance budgets, and delivery pipelines to keep quality measurable.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="work section-pad" id="work">
+    <div class="section-heading">
+      <div><p class="eyebrow"><span></span> Selected work</p><h2>Systems with<br><em>real impact.</em></h2></div>
+      <p>From industrial controls to creator marketplaces, I turn high-stakes requirements into clear, performant product experiences.</p>
+    </div>
+    <div class="filters" aria-label="Project filters">
+      @for (category of categories; track category) {
+        <button type="button" [class.active]="activeCategory === category" (click)="setCategory(category)">{{ category }}</button>
+      }
+    </div>
+    <div class="project-grid">
+      @for (project of filteredProjects; track project.code) {
+        <article class="project-card" [class]="project.accent">
+          <div class="project-top"><span>{{ project.code }} / {{ project.category }}</span><i>&nearr;</i></div>
+          <div class="project-art">
+            <div class="art-lines"></div><strong>{{ project.impact }}</strong><span>{{ project.impactLabel }}</span>
+          </div>
+          <div class="project-body">
+            <p>{{ project.company }}</p><h3>{{ project.title }}</h3><p class="summary">{{ project.summary }}</p>
+            <div class="tags">@for (tag of project.tags; track tag) { <span>{{ tag }}</span> }</div>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="experience section-pad" id="experience">
+    <div class="section-heading compact">
+      <div><p class="eyebrow"><span></span> Experience</p><h2>Building at<br><em>every scale.</em></h2></div>
+      <p>Architecture thinking grounded in hands-on delivery, cross-functional collaboration, and measurable outcomes.</p>
+    </div>
+    <div class="timeline">
+      <article>
+        <div class="date">2024 - NOW</div><div class="timeline-dot"></div>
+        <div class="role"><p>TORRY HARRIS INTEGRATION SOLUTIONS</p><h3>Software Engineer</h3></div>
+        <div class="details"><p>Architecting a shared Nx frontend foundation for 4+ industrial modules. Leading real-time interfaces, internationalization, and security integrations across mission-critical products.</p><div class="tags"><span>Angular 20</span><span>Nx</span><span>SignalR</span><span>Security</span></div></div>
+      </article>
+      <article>
+        <div class="date">2022 - 2024</div><div class="timeline-dot"></div>
+        <div class="role"><p>ZAPBUILD TECHNOLOGIES</p><h3>Senior Associate Technology</h3></div>
+        <div class="details"><p>Delivered marketplace, event, and social activity products. Built complex payment workflows, real-time engagement, SSR experiences, and location-based discovery.</p><div class="tags"><span>ReactJS</span><span>Angular</span><span>Node.js</span><span>MongoDB</span></div></div>
+      </article>
+      <article>
+        <div class="date">2021 - 2022</div><div class="timeline-dot"></div>
+        <div class="role"><p>ABACUS DESK IT SOLUTIONS</p><h3>Software Developer</h3></div>
+        <div class="details"><p>Modernized B2B CRM platforms across Angular generations and developed cross-platform mobile apps with role-based synchronization and offline support.</p><div class="tags"><span>Angular</span><span>Ionic</span><span>Firebase</span><span>CRM</span></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="stack section-pad" id="stack">
+    <div class="section-heading compact">
+      <div><p class="eyebrow"><span></span> Technical stack</p><h2>Tools are only as<br>good as the <em>thinking.</em></h2></div>
+      <p>I choose technology around the problem: performance constraints, team velocity, product longevity, and the people using it.</p>
+    </div>
+    <div class="stack-grid">
+      <article><span>01</span><h3>Frontend Engineering</h3><p>Angular 2-20 / ReactJS / TypeScript / RxJS / NgRx / Angular Material / JavaScript ES6+</p></article>
+      <article><span>02</span><h3>Architecture</h3><p>Nx Monorepos / Microfrontends / SSR / PWA / Design Patterns / Reusable Foundations</p></article>
+      <article><span>03</span><h3>Backend & Data</h3><p>Node.js / Express.js / ASP.NET Core / MongoDB / REST / WebSocket / SignalR</p></article>
+      <article><span>04</span><h3>Security & Delivery</h3><p>RBAC / ACL / MFA / SSO / AWS / Azure / CI/CD / Jenkins / WCAG / SEO</p></article>
+    </div>
+  </section>
+
+  <section class="contact section-pad" id="contact">
+    <p class="eyebrow"><span></span> Available for ambitious products</p>
+    <h2>Have a complex<br>problem? <em>Let's solve it.</em></h2>
+    <div class="contact-bottom">
+      <a class="button light" href="mailto:satyamshharish@gmail.com">Start a conversation <span>&nearr;</span></a>
+      <div><a href="tel:+919910281869">+91 99102 81869</a><p>Faridabad, Haryana, India</p></div>
+    </div>
+  </section>
+</main>
+
+<footer><a class="brand" href="#top"><span>SS</span><strong>SATYAM<br>SHARMA</strong></a><p>Senior Software Engineer / Frontend Architect</p><span>&copy; 2026</span></footer>
